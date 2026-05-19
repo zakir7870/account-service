@@ -1,0 +1,67 @@
+server:
+  port: 8082
+
+spring:
+  cloud:
+    inetutils:
+      preferred-networks:
+        - 127.0.0
+  application:
+    name: account-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/banking_system
+    username: root
+    password: root@39
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update   # create/update tables automatically
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # Optional (if using Spring Security default user disable)
+  security:
+    user:
+      name: admin
+      password: admin
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+# JWT CONFIG (used in Auth + Account)
+jwt:
+  secret: mysecretkey
+  expiration: 3600000   # 1 hour
+
+# Logging (optional)
+logging:
+  level:
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+      register-with-eureka: true
+      fetch-registry: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
