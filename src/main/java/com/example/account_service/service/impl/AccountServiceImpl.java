@@ -3,19 +3,19 @@ package com.example.account_service.service.impl;
 
 import com.example.account_service.dto.AccountRequest;
 import com.example.account_service.dto.AccountResponse;
-import com.example.account_service.dto.TransactionEvent;
 import com.example.account_service.dto.TransactionRequest;
 import com.example.account_service.enity.Account;
-import com.example.account_service.enums.EventType;
-import com.example.account_service.kafka.KafkaProducer;
 import com.example.account_service.mapper.AccountMapper;
 import com.example.account_service.repository.AccountRepository;
 import com.example.account_service.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -23,67 +23,74 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountRepository repository;
 
-    @Autowired
-    private KafkaProducer producer;
-
+    // CREATE ACCOUNT
     @Override
-    public AccountResponse create(
-            AccountRequest request) {
+    @CacheEvict(value = {"accounts", "balance"}, allEntries = true)
+    public AccountResponse create(AccountRequest request, String userName) {
 
-        Account account =
-                AccountMapper.toEntity(request);
+        Account account = AccountMapper.toEntity(request);
 
-        Account saved =
-                repository.save(account);
+        account.setUsername(userName);
 
-        // UPDATED KAFKA EVENT
-        TransactionEvent event =
-                TransactionEvent.builder()
-                        .eventType(
-                                EventType.TRANSFER)
-                        .transactionId(1L)
-                        .fromAccount(1001L)
-                        .toAccount(1002L)
-                        .amount(saved.getBalance())
-                        .build();
+        if (account.getAccountNumber() == null || account.getAccountNumber().isEmpty()) {
+            account.setAccountNumber(UUID.randomUUID().toString());
+        }
 
-        producer.sendEvent(event);
+        Account saved = repository.save(account);
 
-        return AccountMapper
-                .toResponse(saved);
+        return AccountMapper.toResponse(saved);
     }
 
-
+    // GET ACCOUNT
     @Override
-    public Account getAccount(Long id) {
-        return repository.findById(id)
+    public Account getAccount(Long id, String userName) {
+
+        Account account = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        validateOwner(account, userName);
+
+        return account;
     }
 
+    // GET BALANCE
     @Override
-    public Double getBalance(Long id) {
-        return getAccount(id).getBalance();
+    @Cacheable(value = "balance", key = "#id")
+    public Double getBalance(Long id, String userName) {
+
+        return getAccount(id, userName).getBalance();
     }
 
+    // GET ALL
     @Override
     public List<Account> getAllAccounts() {
         return repository.findAll();
     }
 
-
+    // GET BY ACCOUNT NUMBER
     @Override
-    public Account getByAccountNumber(String accountNumber) {
+    @Cacheable(value = "accounts", key = "#accountNumber")
+    public Account getByAccountNumber(String accountNumber, String userName) {
 
-        return repository.findByAccountNumber(accountNumber)
+        System.out.println("Fetching account from DB...");
+
+        Account account = repository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        validateOwner(account, userName);
+
+        return account;
     }
 
-
+    // UPDATE
     @Override
-    public Account updateAccount(AccountRequest request) {
+    @CachePut(value = "accounts", key = "#request.accountNumber")
+    public Account updateAccount(AccountRequest request, String userName) {
 
         Account account = repository.findByAccountNumber(request.getAccountNumber())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        validateOwner(account, userName);
 
         account.setCustomerName(request.getCustomerName());
         account.setBalance(request.getBalance());
@@ -91,31 +98,20 @@ public class AccountServiceImpl implements AccountService {
         return repository.save(account);
     }
 
-
-    // Kafka Producer trigger
+    //  TRANSFER → NO KAFKA HERE
     @Override
-    public String transfer(
-            TransactionRequest request) {
+    public String transfer(TransactionRequest request, String userName) {
 
-        TransactionEvent event =
-                TransactionEvent.builder()
-                        .eventType(
-                                EventType.TRANSFER)
-                        .transactionId(
-                                request.getTransactionId())
-                        .fromAccount(
-                                request.getFromAccount())
-                        .toAccount(
-                                request.getToAccount())
-                        .amount(
-                                request.getAmount())
-                        .build();
-
-        producer.sendEvent(event);
-
-        return "Transaction event sent to Kafka";
+        return "Transfer handled by Transaction Service";
     }
 
+    // SECURITY
+    private void validateOwner(Account account, String userName) {
 
+        if (account.getUsername() == null ||
+                !account.getUsername().equals(userName)) {
 
+            throw new RuntimeException("Unauthorized access");
+        }
+    }
 }
