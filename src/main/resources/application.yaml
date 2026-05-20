@@ -3,68 +3,36 @@ server:
 
 spring:
 
-  cache:
-    type: redis
-
-    redis:
-      host: localhost
-      port: 6379
-
-
-  cloud:
-    inetutils:
-      preferred-networks:
-        - 127.0.0
   application:
     name: account-service
 
   datasource:
     url: jdbc:mysql://localhost:3306/banking_system
     username: root
-    password: root@39
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update   # create/update tables automatically
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
 
-  # Optional (if using Spring Security default user disable)
-  security:
-    user:
-      name: admin
-      password: admin
-
-
+  cache:
+    type: redis
+    redis:
+      host: localhost
+      port: 6379
 
   kafka:
-    bootstrap-servers: localhost:9092
-
     consumer:
+      bootstrap-servers: localhost:9092
       group-id: account-group
       auto-offset-reset: earliest
-
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-
-      properties:
-        spring.json.trusted.packages: "*"
-
-
-
-# JWT CONFIG (used in Auth + Account)
-jwt:
-  secret: mysecretkey
-  expiration: 3600000   # 1 hour
-
-# Logging (optional)
-logging:
-  level:
-    org.springframework.security: INFO
-    org.hibernate.SQL: DEBUG
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 eureka:
   instance:
@@ -72,16 +40,28 @@ eureka:
     ip-address: 127.0.0.1
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
+
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
       register-with-eureka: true
       fetch-registry: true
+
+jwt:
+  secret: mysecretkey
+  expiration: 3600000
+
+logging:
+  level:
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+
   endpoint:
     health:
       show-details: always

@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TransactionEvent {
     private Long transactionId;
-    private String fromAccount;
-    private String toAccount;
+    private Long fromAccount;
+    private Long toAccount;
     private Double amount;
-
 }

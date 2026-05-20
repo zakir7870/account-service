@@ -2,9 +2,12 @@ package com.example.account_service.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
-@Builder
+@Getter
+@Setter
 public class AccountResponse {
 
     private Long id;

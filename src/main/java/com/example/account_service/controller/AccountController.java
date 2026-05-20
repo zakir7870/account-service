@@ -4,6 +4,8 @@ import com.example.account_service.dto.AccountRequest;
 import com.example.account_service.dto.AccountResponse;
 import com.example.account_service.dto.TransactionRequest;
 import com.example.account_service.enity.Account;
+import com.example.account_service.mapper.AccountMapper;
+import com.example.account_service.repository.AccountRepository;
 import com.example.account_service.service.AccountService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/accounts")
 public class AccountController {
 
+    @Autowired
+    private AccountRepository repository;
     @Autowired
     private AccountService service;
 
@@ -27,6 +31,7 @@ public class AccountController {
 
         return service.create(request, username);
     }
+
 
     // Get by AccountNumber
 
@@ -54,6 +59,7 @@ public class AccountController {
 
     // Get Balance
 
+    @PostMapping("/balance")
     public Double getBalance(@RequestBody AccountRequest request,
                              HttpServletRequest httpRequest) {
 
