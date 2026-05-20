@@ -1,16 +1,27 @@
 package com.example.account_service.kafka;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.account_service.dto.TransactionEvent;
+import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
+@RequiredArgsConstructor
 public class KafkaProducer {
 
-    @Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String,
+            TransactionEvent>
+            kafkaTemplate;
 
-    public void sendEvent(Object data) {
-        kafkaTemplate.send("TRANSFER_TOPIC", data);
+    public void sendEvent(
+            TransactionEvent event) {
+
+        kafkaTemplate.send(
+                "TRANSFER_TOPIC",
+                event
+        );
+
+        System.out.println(
+                "Event Sent : " + event);
     }
 }

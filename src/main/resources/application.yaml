@@ -12,7 +12,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/banking_system
     username: root
-    password: root@39
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:

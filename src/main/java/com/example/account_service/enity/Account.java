@@ -2,11 +2,13 @@ package com.example.account_service.enity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "accounts")
+@Builder
 public class Account {
 
     @Id

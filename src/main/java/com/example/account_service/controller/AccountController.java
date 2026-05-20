@@ -1,6 +1,7 @@
 package com.example.account_service.controller;
 
 import com.example.account_service.dto.AccountRequest;
+import com.example.account_service.dto.AccountResponse;
 import com.example.account_service.dto.TransactionRequest;
 import com.example.account_service.enity.Account;
 import com.example.account_service.service.AccountService;
@@ -17,8 +18,8 @@ public class AccountController {
 
     // Create
     @PostMapping("/create")
-    public Account create(@Valid @RequestBody Account account) {
-        return service.createAccount(account);
+    public AccountResponse create(@Valid @RequestBody AccountRequest request) {
+        return service.create(request);
     }
 
     // Get by AccountNumber
