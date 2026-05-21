@@ -20,5 +20,6 @@ import java.util.Map;
 @Configuration
 @EnableKafka
 public class KafkaConfig {
+
 }
 

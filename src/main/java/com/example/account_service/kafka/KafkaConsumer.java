@@ -16,105 +16,165 @@ public class KafkaConsumer {
     private final AccountRepository repository;
     private final KafkaProducerService producer;
 
-    @KafkaListener(topics = "transaction-topic", groupId = "account-group")
+    @KafkaListener(
+            topics = "transaction-topic",
+            groupId = "account-group",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
     @Transactional
     public void consume(TransactionEvent event) {
 
         try {
-            System.out.println("RECEIVED EVENT: " + event);
+
+            System.out.println("\n========================================");
+            System.out.println("ACCOUNT SERVICE RECEIVED EVENT");
+            System.out.println("EVENT : " + event);
+            System.out.println("========================================\n");
+
+            if (event == null) {
+                return;
+            }
 
             if (event.getEventType() != EventType.TRANSFER_INITIATED) {
                 return;
             }
 
-            // Fetch accounts
+            // FETCH FROM ACCOUNT
             Account fromAccount = repository
                     .findByAccountNumber(String.valueOf(event.getFromAccount()))
-                    .orElseThrow(() -> new RuntimeException("From account not found"));
+                    .orElseThrow(() ->
+                            new RuntimeException("From account not found"));
 
+            // FETCH TO ACCOUNT
             Account toAccount = repository
                     .findByAccountNumber(String.valueOf(event.getToAccount()))
-                    .orElseThrow(() -> new RuntimeException("To account not found"));
+                    .orElseThrow(() ->
+                            new RuntimeException("To account not found"));
 
-            // Check balance
-            if (fromAccount.getBalance() == null ||
-                    fromAccount.getBalance() < event.getAmount()) {
+            System.out.println("FROM ACCOUNT FOUND : "
+                    + fromAccount.getAccountNumber());
+
+            System.out.println("TO ACCOUNT FOUND : "
+                    + toAccount.getAccountNumber());
+
+            System.out.println("\nCURRENT BALANCES");
+            System.out.println("FROM ACCOUNT BALANCE : "
+                    + fromAccount.getBalance());
+
+            System.out.println("TO ACCOUNT BALANCE : "
+                    + toAccount.getBalance());
+
+            // CHECK BALANCE
+            if (fromAccount.getBalance() < event.getAmount()) {
+
+                System.out.println("\nINSUFFICIENT BALANCE");
+                System.out.println("TRANSFER FAILED");
 
                 sendFailure(event);
                 return;
             }
 
-            //  STEP 1: DEBIT
-            fromAccount.setBalance(
-                    fromAccount.getBalance() - event.getAmount()
-            );
+            // ================= DEBIT =================
+
+            System.out.println("\n========== STARTING DEBIT ==========");
+
+            Double oldFromBalance = fromAccount.getBalance();
+
+            Double newFromBalance =
+                    oldFromBalance - event.getAmount();
+
+            System.out.println("OLD FROM ACCOUNT BALANCE : "
+                    + oldFromBalance);
+
+            System.out.println("TRANSFER AMOUNT : "
+                    + event.getAmount());
+
+            System.out.println("NEW FROM ACCOUNT BALANCE : "
+                    + newFromBalance);
+
+            fromAccount.setBalance(newFromBalance);
+
             repository.save(fromAccount);
 
-            producer.sendEvent(new TransactionEvent(
-                    EventType.AMOUNT_DEBITED,
-                    event.getTransactionId(),
-                    event.getFromAccount(),
-                    event.getToAccount(),
-                    event.getAmount()
-            ));
+            System.out.println("DEBIT UPDATED IN DATABASE SUCCESSFULLY");
 
-            //  STEP 2: CREDIT (WITH FAILURE HANDLING)
-            try {
+            producer.sendEvent(
+                    new TransactionEvent(
+                            EventType.AMOUNT_DEBITED,
+                            event.getTransactionId(),
+                            event.getFromAccount(),
+                            event.getToAccount(),
+                            event.getAmount()
+                    )
+            );
 
-                toAccount.setBalance(
-                        toAccount.getBalance() + event.getAmount()
-                );
-                repository.save(toAccount);
+            System.out.println("DEBIT EVENT SENT TO KAFKA");
 
-                producer.sendEvent(new TransactionEvent(
-                        EventType.AMOUNT_CREDITED,
-                        event.getTransactionId(),
-                        event.getFromAccount(),
-                        event.getToAccount(),
-                        event.getAmount()
-                ));
+            // ================= CREDIT =================
 
-                System.out.println(" Transfer completed successfully");
+            System.out.println("\n========== STARTING CREDIT ==========");
 
-            } catch (Exception creditException) {
+            Double oldToBalance = toAccount.getBalance();
 
-                System.err.println(" Credit failed, starting compensation");
+            Double newToBalance =
+                    oldToBalance + event.getAmount();
 
-                //  COMPENSATION (ROLLBACK DEBIT)
-                fromAccount.setBalance(
-                        fromAccount.getBalance() + event.getAmount()
-                );
-                repository.save(fromAccount);
+            System.out.println("OLD TO ACCOUNT BALANCE : "
+                    + oldToBalance);
 
-                producer.sendEvent(new TransactionEvent(
-                        EventType.TRANSFER_COMPENSATED,
-                        event.getTransactionId(),
-                        event.getFromAccount(),
-                        event.getToAccount(),
-                        event.getAmount()
-                ));
-            }
+            System.out.println("TRANSFER AMOUNT : "
+                    + event.getAmount());
+
+            System.out.println("NEW TO ACCOUNT BALANCE : "
+                    + newToBalance);
+
+            toAccount.setBalance(newToBalance);
+
+            repository.save(toAccount);
+
+            System.out.println("CREDIT UPDATED IN DATABASE SUCCESSFULLY");
+
+            producer.sendEvent(
+                    new TransactionEvent(
+                            EventType.AMOUNT_CREDITED,
+                            event.getTransactionId(),
+                            event.getFromAccount(),
+                            event.getToAccount(),
+                            event.getAmount()
+                    )
+            );
+
+            System.out.println("CREDIT EVENT SENT TO KAFKA");
+
+            // ================= SUCCESS =================
+
+            System.out.println("\n========================================");
+            System.out.println("TRANSFER COMPLETED SUCCESSFULLY");
+            System.out.println("TRANSACTION ID : "
+                    + event.getTransactionId());
+            System.out.println("========================================\n");
 
         } catch (Exception e) {
 
-            System.err.println(" Kafka Consumer Error: " + e.getMessage());
-            sendFailure(eventSafe(event));
+            System.out.println("\n========================================");
+            System.out.println("ACCOUNT SERVICE ERROR");
+            System.out.println("ERROR MESSAGE : " + e.getMessage());
+            System.out.println("========================================\n");
         }
     }
 
-    //  FAILURE EVENT
     private void sendFailure(TransactionEvent event) {
-        producer.sendEvent(new TransactionEvent(
-                EventType.TRANSFER_FAILED,
-                event.getTransactionId(),
-                event.getFromAccount(),
-                event.getToAccount(),
-                event.getAmount()
-        ));
-    }
 
-    //  Safe fallback
-    private TransactionEvent eventSafe(TransactionEvent event) {
-        return event == null ? new TransactionEvent() : event;
+        System.out.println("\nSENDING TRANSFER FAILED EVENT");
+
+        producer.sendEvent(
+                new TransactionEvent(
+                        EventType.TRANSFER_FAILED,
+                        event.getTransactionId(),
+                        event.getFromAccount(),
+                        event.getToAccount(),
+                        event.getAmount()
+                )
+        );
     }
 }
