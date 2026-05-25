@@ -1,3 +1,87 @@
+#server:
+#  port: 8082
+#
+#spring:
+#
+#  application:
+#    name: account-service
+#
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/banking_system
+#    username: root
+#    password: root
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#
+#  cache:
+#    type: redis
+#    redis:
+#      host: localhost
+#      port: 6379
+#
+#  kafka:
+#    bootstrap-servers: localhost:9092
+#
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#
+#      properties:
+#        spring.json.add.type.headers: false
+#
+#    consumer:
+#      group-id: account-group
+#      auto-offset-reset: earliest
+#
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+#
+#      properties:
+#        spring.json.trusted.packages: "*"
+#        spring.json.use.type.headers: false
+#        spring.json.value.default.type: com.example.account_service.dto.TransactionEvent
+#
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#    ip-address: 127.0.0.1
+#    lease-renewal-interval-in-seconds: 10
+#    lease-expiration-duration-in-seconds: 30
+#
+#  client:
+#    service-url:
+##      defaultZone: http://localhost:8761/eureka
+#      defaultZone: http://eureka-service:8761/eureka
+#      register-with-eureka: true
+#      fetch-registry: true
+#
+#jwt:
+#  secret: mysecretkey
+#  expiration: 3600000
+#
+#logging:
+#  level:
+#    org.springframework.security: INFO
+#    org.hibernate.SQL: DEBUG
+#    org.springframework.kafka: INFO
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health,info
+#
+#  endpoint:
+#    health:
+#      show-details: always
+
 server:
   port: 8082
 
@@ -7,7 +91,7 @@ spring:
     name: account-service
 
   datasource:
-    url: jdbc:mysql://localhost:3306/banking_system
+    url: jdbc:mysql://mysql:3306/banking_system
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -23,11 +107,11 @@ spring:
   cache:
     type: redis
     redis:
-      host: localhost
+      host: redis
       port: 6379
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:9092
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -49,17 +133,14 @@ spring:
         spring.json.value.default.type: com.example.account_service.dto.TransactionEvent
 
 eureka:
-  instance:
-    prefer-ip-address: true
-    ip-address: 127.0.0.1
-    lease-renewal-interval-in-seconds: 10
-    lease-expiration-duration-in-seconds: 30
-
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
-      register-with-eureka: true
-      fetch-registry: true
+      defaultZone: http://eureka-service:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+
+  instance:
+    prefer-ip-address: true
 
 jwt:
   secret: mysecretkey
