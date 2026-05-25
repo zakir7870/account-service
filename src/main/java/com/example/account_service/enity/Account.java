@@ -4,13 +4,16 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.Builder;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Entity
 @Data
 @Table(name = "accounts")
-public class Account {
+public class Account implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +23,7 @@ public class Account {
     private String customerName;
 
     // Logged-in user (from JWT via Gateway)
-    @NotBlank(message = "Customer name is required")
+    @NotBlank(message = "Username is required")
     private String username;
 
     @NotBlank(message = "Account number is required")

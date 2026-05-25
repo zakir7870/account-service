@@ -4,8 +4,6 @@ import com.example.account_service.dto.AccountRequest;
 import com.example.account_service.dto.AccountResponse;
 import com.example.account_service.dto.TransactionRequest;
 import com.example.account_service.enity.Account;
-import com.example.account_service.mapper.AccountMapper;
-import com.example.account_service.repository.AccountRepository;
 import com.example.account_service.service.AccountService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -17,11 +15,9 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
 
     @Autowired
-    private AccountRepository repository;
-    @Autowired
     private AccountService service;
 
-    // Create
+    // CREATE ACCOUNT
 
     @PostMapping("/create")
     public AccountResponse create(@Valid @RequestBody AccountRequest request,
@@ -32,8 +28,7 @@ public class AccountController {
         return service.create(request, username);
     }
 
-
-    // Get by AccountNumber
+    // GET ACCOUNT BY ACCOUNT NUMBER
 
     @PostMapping("/get")
     public Account get(@RequestBody AccountRequest request,
@@ -41,11 +36,13 @@ public class AccountController {
 
         String username = httpRequest.getHeader("X-User");
 
-        return service.getByAccountNumber(request.getAccountNumber(), username);
+        return service.getByAccountNumber(
+                request.getAccountNumber(),
+                username
+        );
     }
 
-
-    // Update
+    // UPDATE ACCOUNT
 
     @PutMapping("/update")
     public Account update(@RequestBody AccountRequest request,
@@ -56,8 +53,7 @@ public class AccountController {
         return service.updateAccount(request, username);
     }
 
-
-    // Get Balance
+    // GET BALANCE
 
     @PostMapping("/balance")
     public Double getBalance(@RequestBody AccountRequest request,
@@ -65,11 +61,13 @@ public class AccountController {
 
         String username = httpRequest.getHeader("X-User");
 
-        return service.getBalance(Long.valueOf(request.getAccountNumber()), username);
+        return service.getBalance(
+                request.getAccountNumber(),
+                username
+        );
     }
 
-
-    //  NEW API → Kafka
+    // TRANSFER
 
     @PostMapping("/transfer")
     public String transfer(@RequestBody TransactionRequest request,

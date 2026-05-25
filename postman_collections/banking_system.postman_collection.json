@@ -1,0 +1,358 @@
+{
+  "info": {
+    "_postman_id": "f2932859-e6c8-4dc6-ac79-ffe91be86b3d",
+    "name": "banking_system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "13249079"
+  },
+  "item": [
+    {
+      "name": "http://localhost:8080/auth/login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\": \"zakir\",\r\n    \"password\": \"zakir123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9080/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9080",
+          "path": [
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Generated from cURL: curl --location 'http://localhost:8080/auth/login' \\\r\n--header 'Content-Type: application/json' \\\r\n--data '{\r\n    \"username\": \"zakir\",\r\n    \"password\": \"1234\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost:8080/accounts/create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6YWtpciIsImlhdCI6MTc3OTcxOTM0OCwiZXhwIjoxNzc5NzIyOTQ4fQ.GK3YITBtfCPzVec6fFx80DQ5xpottrsfYjjUOlBvNNs"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User",
+            "value": "zakir",
+            "type": "text"
+          },
+          {
+            "key": "X-Authenticated-User",
+            "value": "zakir",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"customerName\": \"z10\",\r\n    \"accountNumber\": \"1011\",\r\n    \"balance\": 17000\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9080/accounts/create",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9080",
+          "path": [
+            "accounts",
+            "create"
+          ]
+        },
+        "description": "Generated from cURL: curl --location 'http://localhost:8080/accounts/create' \\\r\n--header 'Authorization: Bearer YOUR_TOKEN_HERE' \\\r\n--header 'Content-Type: application/json' \\\r\n--data '{\r\n    \"customerName\": \"Ravi\",\r\n    \"accountNumber\": \"1001\",\r\n    \"balance\": 5000\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost:8080/transactions/get",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6YWtpciIsImlhdCI6MTc3OTcxOTM0OCwiZXhwIjoxNzc5NzIyOTQ4fQ.GK3YITBtfCPzVec6fFx80DQ5xpottrsfYjjUOlBvNNs"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User",
+            "value": "zakir",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"transactionId\": 102\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9080/transactions/get",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9080",
+          "path": [
+            "transactions",
+            "get"
+          ]
+        },
+        "description": "Generated from cURL: curl --location 'http://localhost:8080/transactions/get' \\\r\n--header 'Authorization: Bearer YOUR_TOKEN' \\\r\n--header 'Content-Type: application/json' \\\r\n--data '{\r\n    \"transactionId\": 1\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost:8080/transactions/transfer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6YWtpciIsImlhdCI6MTc3OTcxOTM0OCwiZXhwIjoxNzc5NzIyOTQ4fQ.GK3YITBtfCPzVec6fFx80DQ5xpottrsfYjjUOlBvNNs"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User",
+            "value": "zakir",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"transactionId\":105,\"fromAccount\":1004,\"toAccount\":\"1001\",\"amount\":50}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9080/transactions/transfer",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9080",
+          "path": [
+            "transactions",
+            "transfer"
+          ]
+        },
+        "description": "Generated from cURL: curl -X POST \"http://localhost:8080/api/transactions/transfer\" -H \"Authorization: Bearer YOUR_JWT_TOKEN\" -H \"Content-Type: application/json\" -d \"{\\\"fromAccount\\\":1001,\\\"toAccount\\\":1002,\\\"amount\\\":5000}\""
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost:9080/accounts/get",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6YWtpciIsImlhdCI6MTc3OTcxOTM0OCwiZXhwIjoxNzc5NzIyOTQ4fQ.GK3YITBtfCPzVec6fFx80DQ5xpottrsfYjjUOlBvNNs"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User",
+            "value": "zakir"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"accountNumber\": \"1011\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9080/accounts/get",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9080",
+          "path": [
+            "accounts",
+            "get"
+          ]
+        },
+        "description": "Generated from cURL: curl --location 'http://localhost:9080/accounts/get' \\\r\n--header 'Authorization: Bearer YOUR_TOKEN' \\\r\n--header 'Content-Type: application/json' \\\r\n--header 'X-User: zakir' \\\r\n--data '{\r\n    \"accountNumber\": \"1011\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost:9080/accounts/update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6YWtpciIsImlhdCI6MTc3OTcxOTM0OCwiZXhwIjoxNzc5NzIyOTQ4fQ.GK3YITBtfCPzVec6fFx80DQ5xpottrsfYjjUOlBvNNs"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User",
+            "value": "zakir"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"customerName\": \"zakir updated\",\r\n    \"accountNumber\": \"1011\",\r\n    \"balance\": 25000\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9080/accounts/update",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9080",
+          "path": [
+            "accounts",
+            "update"
+          ]
+        },
+        "description": "Generated from cURL: curl --location --request PUT 'http://localhost:9080/accounts/update' \\\r\n--header 'Authorization: Bearer YOUR_TOKEN' \\\r\n--header 'Content-Type: application/json' \\\r\n--header 'X-User: zakir' \\\r\n--data '{\r\n    \"customerName\": \"zakir updated\",\r\n    \"accountNumber\": \"1011\",\r\n    \"balance\": 25000\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost:9080/accounts/balance",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6YWtpciIsImlhdCI6MTc3OTcxOTM0OCwiZXhwIjoxNzc5NzIyOTQ4fQ.GK3YITBtfCPzVec6fFx80DQ5xpottrsfYjjUOlBvNNs"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User",
+            "value": "zakir"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"accountNumber\": \"1011\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9080/accounts/balance",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9080",
+          "path": [
+            "accounts",
+            "balance"
+          ]
+        },
+        "description": "Generated from cURL: curl --location 'http://localhost:9080/accounts/balance' \\\r\n--header 'Authorization: Bearer YOUR_TOKEN' \\\r\n--header 'Content-Type: application/json' \\\r\n--header 'X-User: zakir' \\\r\n--data '{\r\n    \"accountNumber\": \"1011\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost:9080/transactions/get",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6YWtpciIsImlhdCI6MTc3OTcxOTM0OCwiZXhwIjoxNzc5NzIyOTQ4fQ.GK3YITBtfCPzVec6fFx80DQ5xpottrsfYjjUOlBvNNs"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User",
+            "value": "zakir"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"transactionId\": 102\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9080/transactions/get",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9080",
+          "path": [
+            "transactions",
+            "get"
+          ]
+        },
+        "description": "Generated from cURL: curl --location --request GET 'http://localhost:9080/transactions/get' \\\r\n--header 'Authorization: Bearer YOUR_TOKEN' \\\r\n--header 'Content-Type: application/json' \\\r\n--header 'X-User: zakir' \\\r\n--data '{\r\n    \"transactionId\": 1\r\n}'"
+      },
+      "response": []
+    }
+  ]
+}

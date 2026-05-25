@@ -9,20 +9,17 @@ import java.util.List;
 
 public interface AccountService {
 
-    AccountResponse create(AccountRequest request,String userName);
-    
-    Account getAccount(Long id,String userName);
+    AccountResponse create(AccountRequest request, String userName);
 
-    Double getBalance(Long id,String userName);
+    Account getAccount(String accountNumber, String userName);
+
+    Double getBalance(String accountNumber, String userName);
 
     List<Account> getAllAccounts();
 
-    Account getByAccountNumber(String accountNumber,String userName);
+    Account getByAccountNumber(String accountNumber, String userName);
 
     Account updateAccount(AccountRequest request, String userName);
 
-
     String transfer(TransactionRequest request, String userName);
-
-
 }

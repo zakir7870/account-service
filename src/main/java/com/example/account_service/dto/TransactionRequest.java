@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class TransactionRequest {
 
-    private Long transactionId;
-    private Long fromAccount;
-    private Long toAccount;
+    private String transactionId;
+    private String fromAccount;
+    private String toAccount;
     private Double amount;
 
 }
