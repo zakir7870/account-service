@@ -5,6 +5,8 @@ import com.example.account_service.dto.AccountResponse;
 import com.example.account_service.dto.TransactionRequest;
 import com.example.account_service.enity.Account;
 
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 public interface AccountService {
@@ -15,8 +17,12 @@ public interface AccountService {
 
     Double getBalance(String accountNumber, String userName);
 
-    List<Account> getAllAccounts();
-
+//    List<Account> getAllAccounts(String userName);
+    Page<Account> getAllAccounts(
+        String userName,
+        int page,
+        int size
+);
     Account getByAccountNumber(String accountNumber, String userName);
 
     Account updateAccount(AccountRequest request, String userName);
